@@ -2,7 +2,7 @@ import React , {useState} from 'react';
 import {css} from '@emotion/react';
 import {useForm, Controller} from 'react-hook-form';
 import axios from 'axios';
-
+import Calender from './Calender';
 
 const App = () => {
   
@@ -43,12 +43,69 @@ const App = () => {
 			alert(error.response.data);
 		}
 	};
+	const forced = async(data)=>{
+		console.log(data);
+		try{
+			const response = await axios.post("https://dangjik.run.goorm.io/forced" , data);
+			console.log(response);
+			console.log("duty has been assigned");
+		}catch(error){
+			alert(error.response.data);
+		}
+	};
+	const score_edit = async(data)=>{
+		console.log(data);
+		try{
+			const response = await axios.patch("https://dangjik.run.goorm.io/score", data);
+			console.log(response);
+			console.log("score has been edited");
+		}catch(error){
+			alert(error.response.data);
+		}
+	};
 	
-  const [User, setUser] = useState([{id : '22-70005389' , name : "이민석" , "score": 14.2 , "month" : 5},
-									 {id : '22-70005389' , name : "이민석" , "score": 14.2 , "month" : 5},
-									 {id : '22-70005389' , name : "이민석" , "score": 14.2 , "month" : 5},
-									 {id : '22-70005389' , name : "이민석" , "score": 14.2 , "month" : 5}]);
+	const GetUsers = async ()=>{
+		try{
+			const response = await axios.get("https://dangjik.run.goorm.io/Users");
+			console.log(response);
+			setUser(response.data)
+		}catch(error){
+			alert(error.response.data);
+		}
+	};
+	const GetDutys = async ()=>{
+		try{
+			const response = await axios.get("https://dangjik.run.goorm.io/Dutys");
+			console.log(response);
+			setDuty(response.data);
+		}catch(error){
+			alert(error.response.data);
+		}
+	};
+  const [User, setUser] = useState([]);
+	const [Duty , setDuty] = useState([]);
 
+	const OJT = ()=>{
+		try{
+			User.map((u)=>{
+				if(u.month <=3){
+					if(u.month % 2){
+						manually({id : u.id ,off : "yes" });
+						manually({id : u.id ,off : "yes" });
+						manually({id : u.id ,off : "no" });
+					}
+					else{
+						manually({id : u.id ,off : "yes" });
+						manually({id : u.id ,off : "no" });
+						manually({id : u.id ,off : "no" });
+					}
+				}
+			});
+		}catch(error){
+			alert(error.response.data);
+		}
+	}
+	
 	return (
 	  <div css = {css`flex-direction : column;`} >
 	  <span css ={css`display : inline-block; width : 500px;`}>
@@ -121,7 +178,7 @@ const App = () => {
 			<input type = "submit"/>
 		</form>
 			
-		<form onSubmit = {handleSubmit_forced(onSubmit)} css = {css`
+		<form onSubmit = {handleSubmit_forced(forced)} css = {css`
 	  	border: 1px solid black;
 	  	padding : 10px;
 	  `} >
@@ -138,7 +195,7 @@ const App = () => {
 				</select>		
 			<input type = "submit"/>
 		</form>
-		<form onSubmit = {handleSubmit_score_edit(onSubmit)} css = {css`
+		<form onSubmit = {handleSubmit_score_edit(score_edit)} css = {css`
 	  	border: 1px solid black;
 	  	padding : 10px;
 	  `}>
@@ -150,6 +207,7 @@ const App = () => {
 			<p>{errors_score_edit.value?.message}</p>
 			<input type = "submit"/>
 		</form>
+		<button onClick = {OJT}>OJT 배정</button>
 		</span>
 		<span css = {css`
 		position : absolute;
@@ -159,7 +217,9 @@ const App = () => {
 			<div css ={css`display : inline-block; width : 100px; padding: 5px; margin-left : 40px;`} >군번</div>
 			<div css ={css`display : inline-block; width : 50px; padding: 5px;`} >이름</div>
 			<div css ={css`display : inline-block; width : 70px; padding: 5px;`} >당직점수</div>
-			<div css ={css`display : inline-block; width : 50px; padding: 5px;`} >달</div>	
+			<div css ={css`display : inline-block; width : 50px; padding: 5px;`} >달</div>
+			<div css ={css`display : inline-block; width : 70px; padding: 5px;`} >우선순위</div>
+			<button onClick = {GetUsers} >조회</button>
 		<ul>
 			{typeof(User)=='object' && User.map((u)=> (
 				<li>
@@ -167,10 +227,13 @@ const App = () => {
 					<div css ={css`display : inline-block; width : 50px; padding: 5px;`} >{u.name}</div>
 					<div css ={css`display : inline-block; width : 70px; padding: 5px;`} >{u.score}</div>
 					<div css ={css`display : inline-block; width : 50px; padding: 5px;`} >{u.month}</div>
+					<div css ={css`display : inline-block; width : 70px; padding: 5px;`} >{u.order}</div>
 				</li>
 			))}	
 		</ul>
 		</span>
+		<button onClick = {GetDutys} >조회</button>
+		<Calender Duty = {Duty}/>
 	  </div>
   );
 };

@@ -11,7 +11,9 @@
   "dependencies": {
     "@emotion/babel-plugin": "^11.10.5",
     "@emotion/react": "^11.10.5",
+    "@iconify/react": "^4.0.1",
     "axios": "^1.2.2",
+    "date-fns": "^2.29.3",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-hook-form": "^7.41.3"

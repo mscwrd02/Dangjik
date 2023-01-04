@@ -82,6 +82,14 @@ const App = () => {
 			alert(error.response.data);
 		}
 	};
+	const DateInitialize = async ()=>{
+		try{
+			const response = await axios.put("https://dangjik.run.goorm.io/date/initialize");
+			console.log(response);
+		}catch(error){
+			alert(error.response.data);
+		}
+	};
   const [User, setUser] = useState([]);
 	const [Duty , setDuty] = useState([]);
 
@@ -234,6 +242,7 @@ const App = () => {
 		</span>
 		<button onClick = {GetDutys} >조회</button>
 		<Calender Duty = {Duty}/>
+		<button onClick = {DateInitialize}>모든 사용자의 날짜 제약조건 초기화</button>
 	  </div>
   );
 };

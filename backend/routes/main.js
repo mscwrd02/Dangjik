@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 
-const { User, Duty} = require('../models');
+const { User, Duty, Date} = require('../models');
 const Sequelize = require('sequelize');
 const router = express.Router();
 
@@ -122,6 +122,25 @@ router.patch('/score', async(req, res, next)=>{
 		const current_score = user.dataValues.score;
 		await user.update({score : current_score + parseInt(req.body.value)});
 		
+		
+	}catch(error){
+		console.log(error);
+		next(error);
+	}
+});
+
+router.put('/date/initialize' ,async(req, res, next)=>{
+	try{
+		for(i =  1; i<=31; i++){
+			await Date.findOrCreate({where : {id : i}});
+		}
+		
+		const all_Date = await Date.findAll({attributes : ['id']});
+		const all_user = await User.findAll({attributes : ['id']});
+		
+		for(let i = 0; i<all_user.length; i++){
+			await all_user[i].addDates(all_Date);
+		}
 		
 	}catch(error){
 		console.log(error);

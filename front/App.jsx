@@ -11,7 +11,7 @@ const App = () => {
   const { register : register_manually, handleSubmit : handleSubmit_manually , formState: { errors : errors_manually } } = useForm();
 	const { register : register_forced, handleSubmit : handleSubmit_forced , formState: { errors : errors_forced } } = useForm();
 	const { register : register_score_edit, handleSubmit : handleSubmit_score_edit , formState: { errors : errors_score_edit } } = useForm();
-	
+	const { register : register_delete_userdate, handleSubmit : handleSubmit_delete_userdate , formState: { errors : errors_delete_userdate } } = useForm();
 	const onSubmit = (data)=>{console.log(data);};
 	const CreateUser = async (data) => {
     console.log(data);
@@ -90,6 +90,27 @@ const App = () => {
 			alert(error.response.data);
 		}
 	};
+	
+	const delete_userdate = async (data)=>{
+		try{
+			const date_array = data.date.replace(/\s/g , "").split(/,/g);
+			data = {id : data.id , date : date_array};
+			console.log(data);
+			const response = await axios.delete("https://dangjik.run.goorm.io/date" ,{data});
+			console.log(response);
+		}catch(error){
+			alert(error.response.data);
+		}
+	};
+	
+	const autoAssign = async()=>{
+		try{
+			const response = await axios.post("https://dangjik.run.goorm.io/duty/auto");
+			console.log(response);
+		}catch(error){
+			alert(error.response.data);
+		}
+	};
   const [User, setUser] = useState([]);
 	const [Duty , setDuty] = useState([]);
 
@@ -117,6 +138,7 @@ const App = () => {
 	return (
 	  <div css = {css`flex-direction : column;`} >
 	  <span css ={css`display : inline-block; width : 500px;`}>
+			<button onClick = {autoAssign}>당직 자동 배정</button>
       <form onSubmit = {handleSubmit_user(CreateUser)} css = {css`
 	  	border: 1px solid black;
 	  	padding : 10px;
@@ -215,6 +237,19 @@ const App = () => {
 			<p>{errors_score_edit.value?.message}</p>
 			<input type = "submit"/>
 		</form>
+			<form onSubmit = {handleSubmit_delete_userdate(delete_userdate)} css = {css`
+	  	border: 1px solid black;
+	  	padding : 10px;
+	  `}>
+			<div>당직 배정일에서 제외시키고 싶은 사용자의 군번을 입력하세요</div>
+				<input  placeholder="ex)22-12345678" {...register_delete_userdate("id" , {required: "필수항목", minLength:{ value : 11 , message : "11자리입니다." }, maxLength:{ value : 11 , message : "11자리입니다." } })} />  
+				<p>{errors_delete_userdate.id?.message}</p>
+			<div>당직 배정일에서 제외시키고 싶은 날짜를 정수로 ,로 구분지어 입력하세요</div>
+			<input  {...register_delete_userdate("date" , {required : "필수항목"} )}  />
+			<p>{errors_delete_userdate.date?.message}</p>
+			<input type = "submit"/>
+		</form>
+			
 		<button onClick = {OJT}>OJT 배정</button>
 		</span>
 		<span css = {css`

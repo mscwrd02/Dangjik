@@ -3,8 +3,8 @@
     "username": "root",
     "password": "1234",
     "database": "dangjik",
-    "host": "3.39.236.94",
-	"port" : "50506",
+    "host": "13.125.49.128",
+	"port" : "52137",
     "dialect": "mysql"
   },
   "test": {

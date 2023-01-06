@@ -45,5 +45,6 @@ module.exports = class Duty extends Sequelize.Model {
 
   static associate(db) {
     db.Duty.belongsTo(db.User);
+		db.Duty.belongsTo(db.Date);
   }
 };

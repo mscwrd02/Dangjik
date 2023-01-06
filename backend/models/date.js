@@ -23,5 +23,7 @@ module.exports = class Date extends Sequelize.Model {
 
   static associate(db) {
     db.Date.belongsToMany(db.User, {through : 'UserCanDutyOnDate' }); 
+		db.Date.hasMany(db.Duty);
+		
   }
 };

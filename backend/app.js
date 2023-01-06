@@ -4,7 +4,11 @@ const path = require('path');
 const cors = require('cors');
 
 const { sequelize } = require('./models');
-const mainRouter = require('./routes/main');
+const userRouter = require('./routes/user');
+const dutyRouter = require('./routes/duty');
+const dateRouter = require('./routes/date');
+
+
 
 const app = express();
 app.set('port', process.env.PORT || 3000);
@@ -24,7 +28,10 @@ app.use(cors({
 	origin : true,
 	credentials : true,
 }))
-app.use('/' , mainRouter);
+app.use('/user' , userRouter);
+app.use('/duty' , dutyRouter);
+app.use('/date' , dateRouter);
+
 app.use((req, res, next) => {
   const error =  new Error(`${req.method} ${req.url} 라우터가 없습니다.`);
   error.status = 404;

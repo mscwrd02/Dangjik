@@ -8,7 +8,6 @@ const App = () => {
   
   const { register : register_user, handleSubmit : handleSubmit_user , formState: { errors : errors_user } } = useForm();
   const { register : register_duty, handleSubmit : handleSubmit_duty , formState: { errors : errors_duty } } = useForm();
-  const { register : register_manually, handleSubmit : handleSubmit_manually , formState: { errors : errors_manually } } = useForm();
 	const { register : register_forced, handleSubmit : handleSubmit_forced , formState: { errors : errors_forced } } = useForm();
 	const { register : register_score_edit, handleSubmit : handleSubmit_score_edit , formState: { errors : errors_score_edit } } = useForm();
 	const { register : register_delete_userdate, handleSubmit : handleSubmit_delete_userdate , formState: { errors : errors_delete_userdate } } = useForm();
@@ -33,16 +32,7 @@ const App = () => {
       alert(error.response.data);
     }
   };
-	const manually = async(data)=>{
-		console.log(data);
-		try{
-			const response = await axios.post("https://dangjik.run.goorm.io/manually" , data);
-			console.log(response);
-			console.log("duty has been assigned");
-		}catch(error){
-			alert(error.response.data);
-		}
-	};
+
 	const forced = async(data)=>{
 		console.log(data);
 		try{
@@ -111,6 +101,15 @@ const App = () => {
 			alert(error.response.data);
 		}
 	};
+	const ojtTest = async ()=>{
+		try{
+			const response = await axios.post("https://dangjik.run.goorm.io/duty/assign/random" ,  {id : '22-70000003' , off : false});
+			console.log(response);
+		}catch(error){
+			alert(error.response.data);
+		}
+	};
+	
   const [User, setUser] = useState([]);
 	const [Duty , setDuty] = useState([]);
 
@@ -119,14 +118,14 @@ const App = () => {
 			User.map((u)=>{
 				if(u.month <=3){
 					if(u.month % 2){
-						manually({id : u.id ,off : "yes" });
-						manually({id : u.id ,off : "yes" });
-						manually({id : u.id ,off : "no" });
+						manually({id : u.id ,off : true});
+						manually({id : u.id ,off : true });
+						manually({id : u.id ,off : false });
 					}
 					else{
-						manually({id : u.id ,off : "yes" });
-						manually({id : u.id ,off : "no" });
-						manually({id : u.id ,off : "no" });
+						manually({id : u.id ,off : true });
+						manually({id : u.id ,off : false });
+						manually({id : u.id ,off : false });
 					}
 				}
 			});
@@ -139,6 +138,7 @@ const App = () => {
 	  <div css = {css`flex-direction : column;`} >
 	  <span css ={css`display : inline-block; width : 500px;`}>
 			<button onClick = {autoAssign}>당직 자동 배정</button>
+			<button onClick = {ojtTest}>OJT 기능 테스트</button>
       <form onSubmit = {handleSubmit_user(CreateUser)} css = {css`
 	  	border: 1px solid black;
 	  	padding : 10px;
@@ -174,7 +174,7 @@ const App = () => {
 		</label> 
 		<label>
 			<div>오전 오후 여부를 선택해주세요</div>
-			<select {...register_duty("dayornight")}>
+			<select {...register_duty("day_or_night")}>
 				<option value = "day">오전</option>
 				<option value = "night">오후</option>
 			</select>
@@ -193,21 +193,6 @@ const App = () => {
 		<input type = "submit"/>
 	  </form>
 			
-	  <form onSubmit = {handleSubmit_manually(manually)} css = {css`
-	  	border: 1px solid black;
-	  	padding : 10px;
-	  `} >
-			<div>오프 또는 무오프 당직으로 배정시킬 사용자의 군번을 입력하세요</div>
-				<input  placeholder="ex)22-12345678" {...register_manually("id" , {required: "필수항목", minLength:{ value : 11 , message : "11자리입니다." }, maxLength:{ value : 11 , message : "11자리입니다." } })} />  
-				<p>{errors_manually.id?.message}</p>
-			<select {...register_manually("off")}>
-				<option value = "yes">오프</option>
-				<option value = "no">무오프</option>
-				<option value = "random">랜덤</option>
-			</select>
-			<input type = "submit"/>
-		</form>
-			
 		<form onSubmit = {handleSubmit_forced(forced)} css = {css`
 	  	border: 1px solid black;
 	  	padding : 10px;
@@ -219,7 +204,7 @@ const App = () => {
 				<input {...register_forced("date" , {required: "필수항목", max : {value : 31 ,message : "일은 31 이하입니다."} , min : {value : 1 , message : "일은 양수입니다."}})} />  
 				<p>{errors_forced.date?.message}</p>
 			<div>오전 오후 여부를 선택해주세요</div>
-				<select {...register_forced("dayornight")}>
+				<select {...register_forced("day_or_night")}>
 					<option value = "day">오전</option>
 					<option value = "night">오후</option>
 				</select>		

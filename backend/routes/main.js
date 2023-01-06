@@ -71,35 +71,6 @@ router.post('/Duty', async(req, res, next)=>{
 	}
 });
 
-router.post('/manually' , async(req, res, next)=>{
-	try{
-		console.log(req.body);
-		const user = await User.findOne({where : {id : req.body.id}});
-		if(!user){
-			res.status(404).send('User doesnt exist');
-		}else{
-			var duty, duty_id;
-			if(req.body.off==='random'){
-				duty =await Duty.findOne({where : {UserId : null} , order : Sequelize.literal('RAND()')});
-	
-			}else if(req.body.off==='yes'){
-				duty =await Duty.findOne({where : {UserId : null , off : true} , order :  Sequelize.literal('RAND()')});
-				
-			}else if(req.body.off==='no'){
-				duty =await Duty.findOne({where : {UserId : null , off : false} , order : Sequelize.literal('RAND()')});
-				
-			}else{
-				res.status(400).send('Select Correct off or not');
-			}
-			if(!duty) res.status(404).send('Duty doesnt exist');
-			await assignUserToDuty(user , duty);
-		}
-	}catch(error){
-		console.log(error);
-		next(error);
-	}
-})
-
 router.post('/forced', async(req, res, next)=>{
 	try{
 		console.log(req.body);

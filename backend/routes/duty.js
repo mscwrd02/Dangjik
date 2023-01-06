@@ -19,7 +19,7 @@ const assignUserToDuty = async (user , duty) =>{
 
 router.get('/all' , async(req,res,next)=>{
 	try{
-		const duty = await Duty.findAll({raw : true , attributes : ['id' , 'date' , 'day_or_night', 'supervisor', 'UserId'] , order : [['date' , 'ASC'] ] , include : {model : User , required : false , attributes : ['name']} });
+		const duty = await Duty.findAll({raw : true , attributes : ['id' , 'date' , 'dayorNight', 'supervisor', 'UserId'] , order : [['date' , 'ASC'] ] , include : {model : User , required : false , attributes : ['name']} });
 		res.status(200).send(duty);
 	}catch(error){
 		console.log(error);
@@ -30,12 +30,12 @@ router.get('/all' , async(req,res,next)=>{
 router.post('/', async(req, res, next)=>{
 	try{
 		console.log(req.body);
-		const dutyId = (parseInt(req.body.date)*2) + dutyIdAlpha[req.body.day_or_night]; 
+		const dutyId = (parseInt(req.body.date)*2) + dutyIdAlpha[req.body.dayOrNight]; 
 		const duty = await Duty.findOne({where :{id : dutyId}});
 		if(duty){
 			res.status(409).send('already exist duty');
 		}else {
-			await Duty.create({id : dutyId, date : req.body.date, day_or_night : req.body.day_or_night , supervisor : req.body.supervisor , off : req.body.off==="yes" ? true : false});
+			await Duty.create({id : dutyId, date : req.body.date, dayOrNight : req.body.dayOrNight, supervisor : req.body.supervisor , off : req.body.off==="yes" ? true : false});
 			console.log(`Create Duty id : ${dutyId} Success`);
 		}
 	}catch(error){
@@ -48,7 +48,7 @@ router.post('/assign/forced', async(req, res, next)=>{
 	try{
 
 		
-		const duty = await Duty.findOne({where :{date : req.body.date, day_or_night : req.body.day_or_night , UserId : null}});
+		const duty = await Duty.findOne({where :{date : req.body.date, dayOrNight : req.body.dayOrNight, UserId : null}});
 		if(!duty) res.status(404).send('Duty doesnt exist');
 		
 		const user = await User.findOne({

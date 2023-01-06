@@ -13,7 +13,7 @@ module.exports = class Duty extends Sequelize.Model {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      day_or_night: {
+      dayOrNight: {
         type: Sequelize.ENUM(['day' , 'night']),
         allowNull: false,
       },
@@ -21,7 +21,7 @@ module.exports = class Duty extends Sequelize.Model {
 		  type : Sequelize.STRING(50),
 		  allowNull : true,
 	  },
-	  good_supervisor : {
+	  isGoodSupervisor : {
 		  type : Sequelize.BOOLEAN,
 		  allowNull : true,
 	  },

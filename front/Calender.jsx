@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState , useMemo} from 'react';
 import { Icon } from '@iconify/react';
 import { format, addMonths, subMonths } from 'date-fns';
 import { startOfMonth, endOfMonth, startOfWeek, endOfWeek } from 'date-fns';
@@ -45,7 +45,7 @@ const RenderDays = () => {
 		`} >{days}</div>;
 };
 
-const RenderCells = ({ currentMonth, selectedDate, onDateClick, Duty }) => {
+const RenderCells = ({ currentMonth,  Duty }) => {
     const monthStart = startOfMonth(currentMonth);
     const monthEnd = endOfMonth(monthStart);
     const startDate = startOfWeek(monthStart);
@@ -95,9 +95,10 @@ const RenderCells = ({ currentMonth, selectedDate, onDateClick, Duty }) => {
     return <div>{rows}</div>;
 };
 
+
 const Calender = ({Duty}) => {
     const [currentMonth, setCurrentMonth] = useState(new Date());
-    const [selectedDate, setSelectedDate] = useState(new Date());
+
 
     const prevMonth = () => {
         setCurrentMonth(subMonths(currentMonth, 1));
@@ -105,9 +106,7 @@ const Calender = ({Duty}) => {
     const nextMonth = () => {
         setCurrentMonth(addMonths(currentMonth, 1));
     };
-    const onDateClick = (day) => {
-        setSelectedDate(day);
-    };
+ 
     return (
         <div className="calendar">
             <RenderHeader
@@ -118,8 +117,6 @@ const Calender = ({Duty}) => {
             <RenderDays />
             <RenderCells
                 currentMonth={currentMonth}
-                selectedDate={selectedDate}
-                onDateClick={onDateClick}
 								Duty = {Duty}
             />
         </div>

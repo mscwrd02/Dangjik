@@ -1,31 +1,24 @@
 import React , {useState} from 'react';
 import {css} from '@emotion/react';
-import {useForm, Controller} from 'react-hook-form';
+import {useForm} from 'react-hook-form';
 import axios from 'axios';
 import Calender from './Calender';
-
+import DangjikButton from './DangjikButton';
+import OJT from './OJT';
+import DangjikAutoAssign from './DangjikAutoAssign';
+import DateInitializer from './DateInitializer';
+import UserCreateForm from './UserCreateForm';
 const App = () => {
   
-  const { register : register_user, handleSubmit : handleSubmit_user , formState: { errors : errors_user } } = useForm();
   const { register : register_duty, handleSubmit : handleSubmit_duty , formState: { errors : errors_duty } } = useForm();
 	const { register : register_forced, handleSubmit : handleSubmit_forced , formState: { errors : errors_forced } } = useForm();
 	const { register : register_score_edit, handleSubmit : handleSubmit_score_edit , formState: { errors : errors_score_edit } } = useForm();
 	const { register : register_delete_userdate, handleSubmit : handleSubmit_delete_userdate , formState: { errors : errors_delete_userdate } } = useForm();
 	const onSubmit = (data)=>{console.log(data);};
-	const CreateUser = async (data) => {
-    console.log(data);
-    try {
-      const response = await axios.post("https://dangjik.run.goorm.io/User",data);
-      console.log(response);
-			console.log('user created');
-    } catch (error) {
-      alert(error.response.data);
-    }
-  };
 	const CreateDuty = async (data) => {
     console.log(data);
     try {
-      const response = await axios.post("https://dangjik.run.goorm.io/Duty", data);
+      const response = await axios.post("https://dangjik.run.goorm.io/duty", data);
       console.log(response);
 			console.log('duty created');
     } catch (error) {
@@ -36,7 +29,7 @@ const App = () => {
 	const forced = async(data)=>{
 		console.log(data);
 		try{
-			const response = await axios.post("https://dangjik.run.goorm.io/forced" , data);
+			const response = await axios.post("https://dangjik.run.goorm.io/duty/assign/forced" , data);
 			console.log(response);
 			console.log("duty has been assigned");
 		}catch(error){
@@ -46,7 +39,7 @@ const App = () => {
 	const score_edit = async(data)=>{
 		console.log(data);
 		try{
-			const response = await axios.patch("https://dangjik.run.goorm.io/score", data);
+			const response = await axios.patch("https://dangjik.run.goorm.io/user/score", data);
 			console.log(response);
 			console.log("score has been edited");
 		}catch(error){
@@ -56,7 +49,7 @@ const App = () => {
 	
 	const GetUsers = async ()=>{
 		try{
-			const response = await axios.get("https://dangjik.run.goorm.io/Users");
+			const response = await axios.get("https://dangjik.run.goorm.io/user/all");
 			console.log(response);
 			setUser(response.data)
 		}catch(error){
@@ -65,21 +58,14 @@ const App = () => {
 	};
 	const GetDutys = async ()=>{
 		try{
-			const response = await axios.get("https://dangjik.run.goorm.io/Dutys");
+			const response = await axios.get("https://dangjik.run.goorm.io/duty/all");
 			console.log(response);
 			setDuty(response.data);
 		}catch(error){
 			alert(error.response.data);
 		}
 	};
-	const DateInitialize = async ()=>{
-		try{
-			const response = await axios.put("https://dangjik.run.goorm.io/date/initialize");
-			console.log(response);
-		}catch(error){
-			alert(error.response.data);
-		}
-	};
+	
 	
 	const delete_userdate = async (data)=>{
 		try{
@@ -93,76 +79,19 @@ const App = () => {
 		}
 	};
 	
-	const autoAssign = async()=>{
-		try{
-			const response = await axios.post("https://dangjik.run.goorm.io/duty/auto");
-			console.log(response);
-		}catch(error){
-			alert(error.response.data);
-		}
-	};
-	const ojtTest = async ()=>{
-		try{
-			const response = await axios.post("https://dangjik.run.goorm.io/duty/assign/random" ,  {id : '22-70000003' , off : false});
-			console.log(response);
-		}catch(error){
-			alert(error.response.data);
-		}
-	};
+	
+
 	
   const [User, setUser] = useState([]);
 	const [Duty , setDuty] = useState([]);
-
-	const OJT = ()=>{
-		try{
-			User.map((u)=>{
-				if(u.month <=3){
-					if(u.month % 2){
-						manually({id : u.id ,off : true});
-						manually({id : u.id ,off : true });
-						manually({id : u.id ,off : false });
-					}
-					else{
-						manually({id : u.id ,off : true });
-						manually({id : u.id ,off : false });
-						manually({id : u.id ,off : false });
-					}
-				}
-			});
-		}catch(error){
-			alert(error.response.data);
-		}
-	}
 	
 	return (
 	  <div css = {css`flex-direction : column;`} >
 	  <span css ={css`display : inline-block; width : 500px;`}>
-			<button onClick = {autoAssign}>당직 자동 배정</button>
-			<button onClick = {ojtTest}>OJT 기능 테스트</button>
-      <form onSubmit = {handleSubmit_user(CreateUser)} css = {css`
-	  	border: 1px solid black;
-	  	padding : 10px;
-	  `} >
-		<label>
-			<div>군번을 입력해주세요</div>
-			<input  placeholder="ex)22-12345678" {...register_user("id" , {required: "필수항목", minLength:{ value : 11 , message : "11자리입니다." }, maxLength:{ value : 11 , message : "11자리입니다." } })} />  
-			<p>{errors_user.id?.message}</p>
-		</label> 
-		<label>
-			<div>이름을 입력해주세요</div>
-			<input  placeholder="김공군" {...register_user("name" , {required: "필수항목"})} />  
-			<p>{errors_user.name?.message}</p>
-		</label> 
-		<label>
-			<div>당직점수를 입력해주세요</div>
-			<input  {...register_user("score")} />  
-		</label>
-		<label>
-			<div>상번월 입력해주세요</div>
-			<input  {...register_user("month")} />  
-		</label>
-		<input type = "submit"/>
-	  </form>
+			<DangjikAutoAssign></DangjikAutoAssign>
+			<OJT User = {User}></OJT>
+			<DateInitializer/>
+      <UserCreateForm/>
 	  <form onSubmit = {handleSubmit_duty(CreateDuty)} css = {css`
 	  	border: 1px solid black;
 	  	padding : 10px;
@@ -234,8 +163,6 @@ const App = () => {
 			<p>{errors_delete_userdate.date?.message}</p>
 			<input type = "submit"/>
 		</form>
-			
-		<button onClick = {OJT}>OJT 배정</button>
 		</span>
 		<span css = {css`
 		position : absolute;
@@ -262,7 +189,6 @@ const App = () => {
 		</span>
 		<button onClick = {GetDutys} >조회</button>
 		<Calender Duty = {Duty}/>
-		<button onClick = {DateInitialize}>모든 사용자의 날짜 제약조건 초기화</button>
 	  </div>
   );
 };

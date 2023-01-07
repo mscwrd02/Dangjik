@@ -17,6 +17,14 @@ const assignUserToDuty = async (user , duty) =>{
 	console.log(`assign ${user.dataValues.id} to ${duty.dataValues.id}`);
 };
 
+const dismissUserToDuty = async (user , duty)=>{
+	await user.removeDuty(duty.dataValues.id);
+	const decrease = duty.dataValues.off ? 1 : 1.5;
+	await user.decrement({score : decrease});
+	await user.update({order : ((user.dataValues.score - decrease)/user.dataValues.month)});
+	await user.addDates([duty.dataValues.date, duty.dataValues.date+1 , duty.dataValues.date+2 , duty.dataValues.date+3 , duty.dataValues.date+4 , duty.dataValues.date+5]);
+};
+
 router.get('/all' , async(req,res,next)=>{
 	try{
 		const duty = await Duty.findAll({raw : true , attributes : ['id' , 'date' , 'dayorNight', 'supervisor', 'UserId'] , order : [['date' , 'ASC'] ] , include : {model : User , required : false , attributes : ['name']} });
@@ -35,8 +43,9 @@ router.post('/', async(req, res, next)=>{
 		if(duty){
 			res.status(409).send('already exist duty');
 		}else {
-			await Duty.create({id : dutyId, date : req.body.date, dayOrNight : req.body.dayOrNight, supervisor : req.body.supervisor , off : req.body.off==="yes" ? true : false});
-			console.log(`Create Duty id : ${dutyId} Success`);
+			const newDuty = await Duty.create({id : dutyId, date : req.body.date, dayOrNight : req.body.dayOrNight, supervisor : req.body.supervisor , off : req.body.off==="yes" ? true : false , isGoodSupervisor : req.body.isGoodSupervisor});
+			const date = await Date.findOne({where :{id : req.body.date}});
+			await date.addDuty(newDuty);
 		}
 	}catch(error){
 		console.log(error);
@@ -70,7 +79,26 @@ router.post('/assign/forced', async(req, res, next)=>{
 		next(error);
 	}
 });
+router.delete('/dismiss/forced', async(req, res, next)=>{
+	try{
 
+		const user = await User.findOne({
+			where : {id : req.body.id}, 
+		});
+		if(!user) res.status(404).send("User doesnt exist");
+		
+		const duty = await Duty.findOne({where :{date : req.body.date, dayOrNight : req.body.dayOrNight, UserId : user.dataValues.id}});
+		if(!duty) res.status(404).send('Duty doesnt exist or Duty didnt assign to User');
+		
+
+		await dismissUserToDuty(user , duty);
+		
+		
+	}catch(error){
+		console.log(error);
+		next(error);
+	}
+});
 router.post('/assign/auto' , async(req , res , next)=>{
 	try{
 		const unAssignedDutys = await Duty.findAll({where :{UserId : null}});

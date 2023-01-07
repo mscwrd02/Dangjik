@@ -2,19 +2,22 @@ import React , {useState} from 'react';
 import {css} from '@emotion/react';
 import {useForm} from 'react-hook-form';
 import axios from 'axios';
-import Calender from './Calender';
-import DangjikButton from './DangjikButton';
-import OJT from './OJT';
-import DangjikAutoAssign from './DangjikAutoAssign';
-import DateInitializer from './DateInitializer';
-import UserCreateForm from './UserCreateForm';
-import DutyCreateForm from './DutyCreateForm';
-import AssignDutyForced from './AssignDutyForced';
-import ScoreEdit from './ScoreEdit';
-import ExcludeDates from './ExcludeDates';
+import Calender from './components/Calender';
+import DangjikButton from './components/DangjikButton';
+import OJT from './components/OJT';
+import DutyAssignAuto from './components/DutyAssignAuto';
+import DateInitializer from './components/DateInitializer';
+import UserCreateForm from './components/UserCreateForm';
+import DateExcludeForm from './components/DateExcludeForm';
+import DutyAssignForm from './components/DutyAssignForm';
+import DutyCreateForm from './components/DutyCreateForm';
+import DutyDismissForm from './components/DutyDismissForm';
+import UserScoreForm from './components/UserScoreForm';
+
+
 const App = () => {
 
-	const onSubmit = (data)=>{console.log(data);};
+	const onSubmit = (data)=>{console.log(data); resettt({id : ''});};
 
 
 	
@@ -36,24 +39,22 @@ const App = () => {
 			alert(error.response.data);
 		}
 	};
-	
-	
-
-	
+	const { register : register, handleSubmit : handleSubmit , formState: { errors : errors } , reset : resettt } = useForm();
   const [User, setUser] = useState([]);
 	const [Duty , setDuty] = useState([]);
 	
 	return (
 	  <div css = {css`flex-direction : column;`} >
 	  <span css ={css`display : inline-block; width : 500px;`}>
-			<DangjikAutoAssign></DangjikAutoAssign>
+			<DutyAssignAuto/>
 			<OJT User = {User}></OJT>
 			<DateInitializer/>
       <UserCreateForm/>
 			<DutyCreateForm/>
-			<AssignDutyForced/>
-			<ScoreEdit/>
-			<ExcludeDates/>
+			<UserScoreForm/>
+			<DateExcludeForm/>
+			<DutyAssignForm/>
+			<DutyDismissForm/>
 		</span>
 		<span css = {css`
 		position : absolute;
@@ -65,10 +66,10 @@ const App = () => {
 			<div css ={css`display : inline-block; width : 70px; padding: 5px;`} >당직점수</div>
 			<div css ={css`display : inline-block; width : 50px; padding: 5px;`} >달</div>
 			<div css ={css`display : inline-block; width : 70px; padding: 5px;`} >우선순위</div>
-			<button onClick = {GetUsers} >조회</button>
+			<DangjikButton onClick = {GetUsers} >사용자조회</DangjikButton>
 		<ul>
 			{typeof(User)=='object' && User.map((u)=> (
-				<li>
+				<li key = {u.id} >
 					<div css ={css`display : inline-block; width : 100px; padding: 5px;`} >{u.id}</div>
 					<div css ={css`display : inline-block; width : 50px; padding: 5px;`} >{u.name}</div>
 					<div css ={css`display : inline-block; width : 70px; padding: 5px;`} >{u.score}</div>
@@ -78,7 +79,7 @@ const App = () => {
 			))}	
 		</ul>
 		</span>
-		<button onClick = {GetDutys} >조회</button>
+		<DangjikButton onClick = {GetDutys} >당직현황조회</DangjikButton>
 		<Calender Duty = {Duty}/>
 	  </div>
   );

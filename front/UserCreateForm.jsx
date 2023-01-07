@@ -23,6 +23,7 @@ const UserCreateForm = ()=>{
 	  	border: 1px solid black;
 	  	padding : 10px;
 		`} >
+			<div css = {css`font-size : 20px; font-weight : 600; padding :10px;`} >사용자 등록하기</div>
 			<Id register = {register} errors = {errors}/>
 			<Name register = {register} errors = {errors}/>
 			<Score register = {register} errors = {errors}/>

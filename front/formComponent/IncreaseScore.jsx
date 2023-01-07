@@ -1,4 +1,4 @@
-const ScoreEdit = ({register , errors})=>{
+const IncreaseScore = ({register , errors})=>{
 	return (
 		<div>
 			<div>당직 점수에 더할 값을 입력하세요(음수가능)</div>
@@ -8,4 +8,4 @@ const ScoreEdit = ({register , errors})=>{
 	);
 };
 
-export default ScoreEdit;
+export default IncreaseScore;

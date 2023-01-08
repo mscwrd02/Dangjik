@@ -4,37 +4,44 @@ import { format, addMonths, subMonths } from 'date-fns';
 import { startOfMonth, endOfMonth, startOfWeek, endOfWeek } from 'date-fns';
 import { isSameMonth, isSameDay, addDays, parse } from 'date-fns';
 import {css} from '@emotion/react';
-
-const RenderHeader = ({ currentMonth, prevMonth, nextMonth }) => {
+import DutyGetAll from './DutyGetAll';
+const RenderHeader = ({ currentMonth , setDuty}) => {
     return (
+			<div>
         <div className="header row" css= {css`
 					display : flex;
-					justify-content : space-between;
+					justify-content : center;
 				`} >
-            <div css = {css`padding-left : 20px;`} >
-                <span>
-                    <span >
-                        {format(currentMonth, 'M')}월
-                    </span>
-                    {format(currentMonth, 'yyyy')}
-                </span>
-            </div>
-            <div>
-                <Icon icon="bi:arrow-left-circle-fill" onClick={prevMonth} />
-                <Icon icon="bi:arrow-right-circle-fill" onClick={nextMonth} />
-            </div>
+        <span css = {css`font-size : 30px; font-weight : 1000; `} >
+					<span css = {css`padding : 20px;`} >
+					  {format(currentMonth, 'yyyy')}년 
+					</span>
+						{format(currentMonth, 'M')}월			
+				</span>
         </div>
+				<div css = {css` display : flex; justify-content : flex-end;`} >
+					<div css ={css`margin-right : 100px; margin-bottom : 20px;`} >
+						<DutyGetAll setDuty = {setDuty} />
+					</div>
+				</div>
+			</div>
     );
 };
 
 const RenderDays = () => {
     const days = [];
-    const date = ['Sun', 'Mon', 'Thu', 'Wed', 'Thrs', 'Fri', 'Sat'];
+    const date = ['SUN', 'MON', 'THU', 'WED', 'THRS', 'FRI', 'SAT'];
 
     for (let i = 0; i < 7; i++) {
         days.push(
             <div key={i} css = {css`
 							width : 90px;
+							padding : 10px;
+							background-color : darkturquoise;
+							font-size : 20px;
+							font-weight : 400;
+							text-align : center;
+							border : 2px solid darkturquoise;
 						`}  >
                 {date[i]}
             </div>,
@@ -70,17 +77,19 @@ const RenderCells = ({ currentMonth,  Duty }) => {
             days.push(
                 <div
                     css={css`
-                    	background- color : ${format(currentMonth, 'M') !== format(day, 'M') ? 'grey' : 'white'}; 
+                    	background- color : ${format(currentMonth, 'M') !== format(day, 'M') ? 'darkgrey' : 'cyan'}; 
 											padding : 10px;
 											width : 90px;
 											height : 90px;
+											border : 2px solid darkturquoise;
+											border-bottom : 0px;
 											`}
                     key={day}
                 >
                     <span>
-											<div>{formattedDate}</div>
-                      <div>{ day <= monthEnd ? final_duty[formattedDate * 2 + 1] === undefined ? 'null' : final_duty[formattedDate* 2 + 1] : null }</div>
-											<div>{ day <= monthEnd ? final_duty[formattedDate*2] === undefined ? 'null' : final_duty[formattedDate * 2] : null }</div>
+											<div css = {css`font-size : 18px; font-weight : 400;`} >{formattedDate}</div>
+                      <div css = {css`font-weight : 300;`}>{ day <= monthEnd ? final_duty[formattedDate * 2 + 1] === undefined ? 'null' : final_duty[formattedDate* 2 + 1] : null }</div>
+											<div css = {css`font-weight : 300;`}>{ day <= monthEnd ? final_duty[formattedDate*2] === undefined ? 'null' : final_duty[formattedDate * 2] : null }</div>
                     </span>
                 </div>,
             );
@@ -100,23 +109,15 @@ const RenderCells = ({ currentMonth,  Duty }) => {
 };
 
 
-const Calender = ({Duty}) => {
+const Calender = ({Duty , setDuty}) => {
     const [currentMonth, setCurrentMonth] = useState(new Date());
 
-
-    const prevMonth = () => {
-        setCurrentMonth(subMonths(currentMonth, 1));
-    };
-    const nextMonth = () => {
-        setCurrentMonth(addMonths(currentMonth, 1));
-    };
  
     return (
-        <div className="calendar">
+        <div css ={css`background-color : aquamarine; border-radius : 10px;`} >
             <RenderHeader
                 currentMonth={currentMonth}
-                prevMonth={prevMonth}
-                nextMonth={nextMonth}
+								setDuty = {setDuty}
             />
             <RenderDays />
             <RenderCells

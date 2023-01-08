@@ -4,7 +4,7 @@
     "password": "1234",
     "database": "dangjik",
     "host": "3.38.252.50",
-	"port" : "57840",
+	"port" : "59683",
     "dialect": "mysql"
   },
   "test": {

@@ -125,7 +125,7 @@ router.post('/assign/auto' , async(req , res , next)=>{
 
 router.post('/assign/random' , async(req , res , next)=>{
 	try{
-		const date = await Date.findOne({
+		let date = await Date.findOne({
 			order : Sequelize.literal('RAND()'),
 		
 			include : [{
@@ -138,9 +138,30 @@ router.post('/assign/random' , async(req , res , next)=>{
 				where : {
 					UserId : null,
 					off : req.body.off,
+					isGoodSupervisor : true,
 				}
 			}]
-		})
+		});
+		if(!date) {
+			date = await Date.findOne({
+			order : Sequelize.literal('RAND()'),
+		
+			include : [{
+				model : User,
+				where : {
+					id : req.body.id,
+				}
+			},{
+				model : Duty,
+				where : {
+					UserId : null,
+					off : req.body.off,
+					isGoodSupervisor : false,
+				}
+			}]
+		});
+			//isGoodSupervisor 로 1차 정렬하고, random으로 2 차정렬 하기
+		}
 		if(!date) res.status(404).send("Can not Assign User To OJT Duty");
 		
 		await assignUserToDuty(date.Users[0] , date.Duties[0]);

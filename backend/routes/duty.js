@@ -7,13 +7,18 @@ const router = express.Router();
 const Op  = Sequelize.Op;
 
 const dutyIdAlpha = {'day' : 1 , 'night' : 0};
+const ojtSchedule = [[true , false,  true] , [false , true , false]];
+
 
 const assignUserToDuty = async (user , duty) =>{
 	await user.addDuty(duty.dataValues.id);
 	const increase = duty.dataValues.off ? 1 : 1.5;
 	await user.increment({score : increase});
-	await user.update({order : ((user.dataValues.score + increase)/user.dataValues.month)});
-	await user.removeDates([duty.dataValues.date, duty.dataValues.date+1 , duty.dataValues.date+2 , duty.dataValues.date+3 , duty.dataValues.date+4 , duty.dataValues.date+5]);
+	if(increase===1) await user.increment({OffCount : 1});
+	else await user.increment({NoOffCount : 1});
+	
+	await user.update({order : ((user.dataValues.score + increase-11.5)/(user.dataValues.month-3))});
+	await user.removeDates([duty.dataValues.date, duty.dataValues.date+1 , duty.dataValues.date+2 , duty.dataValues.date+3 , duty.dataValues.date+4]);
 	console.log(`assign ${user.dataValues.id} to ${duty.dataValues.id}`);
 };
 
@@ -21,8 +26,10 @@ const dismissUserToDuty = async (user , duty)=>{
 	await user.removeDuty(duty.dataValues.id);
 	const decrease = duty.dataValues.off ? 1 : 1.5;
 	await user.decrement({score : decrease});
-	await user.update({order : ((user.dataValues.score - decrease)/user.dataValues.month)});
-	await user.addDates([duty.dataValues.date, duty.dataValues.date+1 , duty.dataValues.date+2 , duty.dataValues.date+3 , duty.dataValues.date+4 , duty.dataValues.date+5]);
+	if(decrease===1) await user.decrement({OffCount : 1});
+	else await user.decrement({NoOffCount : 1});
+	await user.update({order : ((user.dataValues.score - decrease-11.5)/(user.dataValues.month-3))});
+	await user.addDates([duty.dataValues.date, duty.dataValues.date+1 , duty.dataValues.date+2 , duty.dataValues.date+3 , duty.dataValues.date+4]);
 };
 
 router.get('/all' , async(req,res,next)=>{
@@ -102,7 +109,7 @@ router.delete('/dismiss/forced', async(req, res, next)=>{
 router.post('/assign/auto' , async(req , res , next)=>{
 	try{
 		const unAssignedDutys = await Duty.findAll({where :{UserId : null}});
-		for(duty of unAssignedDutys){
+		for(const duty of unAssignedDutys){
 			const user = await User.findOne({
 				include : {
 					model : Date,
@@ -123,49 +130,33 @@ router.post('/assign/auto' , async(req , res , next)=>{
 	}
 });
 
-router.post('/assign/random' , async(req , res , next)=>{
+router.post('/assign/ojt' , async(req , res , next)=>{
 	try{
-		let date = await Date.findOne({
-			order : Sequelize.literal('RAND()'),
-		
-			include : [{
-				model : User,
-				where : {
-					id : req.body.id,
-				}
-			},{
-				model : Duty,
-				where : {
-					UserId : null,
-					off : req.body.off,
-					isGoodSupervisor : true,
-				}
-			}]
-		});
-		if(!date) {
-			date = await Date.findOne({
-			order : Sequelize.literal('RAND()'),
-		
-			include : [{
-				model : User,
-				where : {
-					id : req.body.id,
-				}
-			},{
-				model : Duty,
-				where : {
-					UserId : null,
-					off : req.body.off,
-					isGoodSupervisor : false,
-				}
-			}]
-		});
-			//isGoodSupervisor 로 1차 정렬하고, random으로 2 차정렬 하기
+		const userOJT = await User.findAll({where :{month : {[Op.lt] : 4}}});
+		for (const user of userOJT){
+			for(const ojt of ojtSchedule[user.dataValues.month%2]){
+				const date = await Date.findOne({
+					include : [{
+						model : User,
+						where : {
+							id : user.id,
+						},
+						attribtes : ['id' , 'score' , 'month'],
+					},{
+						model : Duty,
+						where : {
+							UserId : null,
+							off : ojt,
+						},
+						attributes : ['id', 'off', 'date'],
+						order :[['isGoodSupervisor' , 'DESC']], 
+					}]
+				});	
+				if(!date) res.status(404).send("Can not Assign User To OJT Duty");
+				await assignUserToDuty(date.Users[0] , date.Duties[0]);
+			}				
 		}
-		if(!date) res.status(404).send("Can not Assign User To OJT Duty");
-		
-		await assignUserToDuty(date.Users[0] , date.Duties[0]);
-		
+		res.status(301).send("OJT assign Completed");
 	}catch(error){
 		console.log(error);
 		next(error);

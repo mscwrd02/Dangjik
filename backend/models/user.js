@@ -26,8 +26,22 @@ module.exports = class User extends Sequelize.Model {
 	  order : {
 		  type : Sequelize.FLOAT,
 		  allowNull : true,
-		  
-	  }
+	  },
+		offCount : {
+			type : Sequelize.INTEGER,
+			allowNull : true,
+			defaultValue : 0,
+		},
+		NoOffCount : {
+			type : Sequelize.INTEGER,
+			allowNull : true,
+			defaultValue : 0,
+		},
+		saryeong : {
+			type : Sequelize.INTEGER,
+			allowNull : true,
+			defaultValue : 0,
+		}
     }, {
       sequelize,
       timestamps: true,

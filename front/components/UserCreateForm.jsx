@@ -1,7 +1,7 @@
 import {useForm} from 'react-hook-form';
 import Id from './formComponent/Id';
 import Name from './formComponent/Name';
-import Score from './formComponent/Score';
+import Count from './formComponent/Count';
 import Month from './formComponent/Month';
 import axios from 'axios';
 import {css} from '@emotion/react';
@@ -26,7 +26,7 @@ const UserCreateForm = ()=>{
 			<div css = {css`font-size : 20px; font-weight : 600; padding :10px;`} >사용자 등록하기</div>
 			<Id register = {register} errors = {errors}/>
 			<Name register = {register} errors = {errors}/>
-			<Score register = {register} errors = {errors}/>
+			<Count register = {register} errors = {errors}/>
 			<Month register = {register} errors = {errors}/>
 		</DangjikForm>
 	);

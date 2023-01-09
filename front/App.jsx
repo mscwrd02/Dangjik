@@ -22,7 +22,7 @@ const App = () => {
 	const [Duty , setDuty] = useState([]);
 	return (
 	  <div css = {css`flex-direction : column;`} >
-	  <span css ={css`display : inline-block; width : 500px;`}>
+	  <span css ={css`display : inline-block; width : 600px;`}>
 			<DutyAssignAuto/>
 			<OJT User = {User}></OJT>
 			<DateInitializer/>

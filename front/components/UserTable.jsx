@@ -22,6 +22,9 @@ const UserTable = ({User , setUser})=>{
 			>
 			<div css ={css`display : inline-block; width : 120px; padding: 5px; margin-left : 25px;`} >군번</div>
 			<div css ={css`display : inline-block; width : 70px; padding: 5px;`} >이름</div>
+			<div css ={css`display : inline-block; width : 70px; padding: 5px;`} >오프 횟수</div>
+			<div css ={css`display : inline-block; width : 90px; padding: 5px;`} >무오프 횟수</div>
+			<div css ={css`display : inline-block; width : 90px; padding: 5px;`} >휴무일 당직사령병 횟수</div>
 			<div css ={css`display : inline-block; width : 70px; padding: 5px;`} >당직점수</div>
 			<div css ={css`display : inline-block; width : 50px; padding: 5px;`} >달</div>
 			<div css ={css`display : inline-block; width : 70px; padding: 5px; margin-right : 20px;`} >우선순위</div>
@@ -32,6 +35,9 @@ const UserTable = ({User , setUser})=>{
 				<li key = {u.id} >
 					<div css ={css`display : inline-block; width : 120px; padding: 5px;`} >{u.id}</div>
 					<div css ={css`display : inline-block; width : 70px; padding: 5px;`} >{u.name}</div>
+					<div css ={css`display : inline-block; width : 70px; padding: 5px;`} >{u.offCount}</div>
+					<div css ={css`display : inline-block; width : 90px; padding: 5px;`} >{u.NoOffCount}</div>
+					<div css ={css`display : inline-block; width : 90px; padding: 5px;`} >{u.saryeong}</div>
 					<div css ={css`display : inline-block; width : 70px; padding: 5px;`} >{u.score}</div>
 					<div css ={css`display : inline-block; width : 50px; padding: 5px;`} >{u.month}</div>
 					<div css ={css`display : inline-block; width : 70px; padding: 5px;`} >{u.order}</div>

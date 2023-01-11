@@ -19,6 +19,7 @@ router.put('/initialize' ,async(req, res, next)=>{
 			await allUser[i].addDates(allDate);
 		}
 		console.log("Date initialize completed");
+		res.status(201).send("Date initialize completed");
 	}catch(error){
 		console.log(error);
 		next(error);
@@ -37,7 +38,7 @@ router.delete('/' ,async(req, res, next)=>{
 			})
 		);
 		console.log(`To ${user.dataValues.id} delete available date ${req.body.date}`);
-		
+		res.send(`To ${user.dataValues.id} delete available date ${req.body.date}`);
 	}catch(error){
 		console.log(error);
 		next(error);
@@ -56,6 +57,8 @@ router.post('/' ,async(req, res, next)=>{
 			})
 		);
 		console.log(`To ${user.dataValues.id} add available date ${req.body.date}`);
+		res.status(201).send(`To ${user.dataValues.id} add available date ${req.body.date}`);
+
 	}catch(error){
 		console.log(error);
 		next(error);

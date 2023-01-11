@@ -18,14 +18,12 @@ import UserTable from './components/UserTable';
 const App = () => {
 
 	const onSubmit = (data)=>{console.log(data);};
+	
   const [User, setUser] = useState([]);
 	const [Duty , setDuty] = useState([]);
 	return (
 	  <div css = {css`flex-direction : column;`} >
 	  <span css ={css`display : inline-block; width : 600px;`}>
-			<DutyAssignAuto/>
-			<OJT User = {User}></OJT>
-			<DateInitializer/>
       <UserCreateForm/>
 			<DutyCreateForm/>
 			<UserScoreForm/>
@@ -34,6 +32,9 @@ const App = () => {
 			<DutyDismissForm/>
 		</span>
 		<UserTable User = {User} setUser = {setUser} />
+		<DutyAssignAuto/>
+		<OJT User = {User}></OJT>
+		<DateInitializer/>
 		<Calender Duty = {Duty} setDuty = {setDuty}/>
 	  </div>
   );

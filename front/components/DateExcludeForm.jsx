@@ -7,7 +7,7 @@ import DangjikForm from './formComponent/DangjikForm';
 
 
 const DateExcludeForm = ()=>{
-	const { register : register, handleSubmit : handleSubmit , formState: { errors : errors } } = useForm();
+	const { register : register, handleSubmit : handleSubmit , formState: { errors : errors }, reset : reset } = useForm();
 
 	const excludeDates = async (data)=>{
 		try{
@@ -16,6 +16,7 @@ const DateExcludeForm = ()=>{
 			console.log(data);
 			const response = await axios.delete("https://dangjik.run.goorm.io/date" ,{data});
 			console.log(response);
+			reset();
 		}catch(error){
 			alert(error.response.data);
 		}

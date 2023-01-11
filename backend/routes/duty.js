@@ -18,7 +18,7 @@ const assignUserToDuty = async (user , duty) =>{
 	else await user.increment({NoOffCount : 1});
 	
 	await user.update({order : ((user.dataValues.score + increase-11.5)/(user.dataValues.month-3))});
-	await user.removeDates([duty.dataValues.date, duty.dataValues.date+1 , duty.dataValues.date+2 , duty.dataValues.date+3 , duty.dataValues.date+4]);
+	await user.removeDates([duty.dataValues.date, duty.dataValues.date+1 , duty.dataValues.date+2 , duty.dataValues.date+3 , duty.dataValues.date+4,duty.dataValues.date-1 , duty.dataValues.date-2 , duty.dataValues.date-3 , duty.dataValues.date-4]);
 	console.log(`assign ${user.dataValues.id} to ${duty.dataValues.id}`);
 };
 
@@ -29,7 +29,8 @@ const dismissUserToDuty = async (user , duty)=>{
 	if(decrease===1) await user.decrement({OffCount : 1});
 	else await user.decrement({NoOffCount : 1});
 	await user.update({order : ((user.dataValues.score - decrease-11.5)/(user.dataValues.month-3))});
-	await user.addDates([duty.dataValues.date, duty.dataValues.date+1 , duty.dataValues.date+2 , duty.dataValues.date+3 , duty.dataValues.date+4]);
+	await user.addDates([duty.dataValues.date, duty.dataValues.date+1 , duty.dataValues.date+2 , duty.dataValues.date+3 , duty.dataValues.date+4,duty.dataValues.date-1 , duty.dataValues.date-2 , duty.dataValues.date-3 , duty.dataValues.date-4]);
+	res.status(201).send(`dismiss ${user.dataValues.id} to ${duty.dataValues.id}`);
 };
 
 router.get('/all' , async(req,res,next)=>{
@@ -53,6 +54,7 @@ router.post('/', async(req, res, next)=>{
 			const newDuty = await Duty.create({id : dutyId, date : req.body.date, dayOrNight : req.body.dayOrNight, supervisor : req.body.supervisor , off : req.body.off==="yes" ? true : false , isGoodSupervisor : req.body.isGoodSupervisor});
 			const date = await Date.findOne({where :{id : req.body.date}});
 			await date.addDuty(newDuty);
+			res.status(201).send(`assign ${user.dataValues.id} to ${duty.dataValues.id}`);
 		}
 	}catch(error){
 		console.log(error);
@@ -79,7 +81,7 @@ router.post('/assign/forced', async(req, res, next)=>{
 		
 		if(!user) res.status(404).send("User doesnt exist or User constraint doesnt match to date of duty");
 		await assignUserToDuty(user , duty);
-		
+		res.status(201).send(`assign ${user.dataValues.id} to ${duty.dataValues.id}`);		
 		
 	}catch(error){
 		console.log(error);
@@ -99,7 +101,7 @@ router.delete('/dismiss/forced', async(req, res, next)=>{
 		
 
 		await dismissUserToDuty(user , duty);
-		
+		res.status(201).send(`dismiss ${user.dataValues.id} to ${duty.dataValues.id}`);
 		
 	}catch(error){
 		console.log(error);
@@ -123,6 +125,7 @@ router.post('/assign/auto' , async(req , res , next)=>{
 				order : [['order' , 'ASC']],
 			});
 			await assignUserToDuty(user , duty);
+			res.status(201).send(`assign ${user.dataValues.id} to ${duty.dataValues.id}`);
 		}
 	}catch(error){
 		console.log(error);
@@ -149,14 +152,14 @@ router.post('/assign/ojt' , async(req , res , next)=>{
 							off : ojt,
 						},
 						attributes : ['id', 'off', 'date'],
-						order :[['isGoodSupervisor' , 'DESC']], 
+						order :['isGoodSupervisor' , 'DESC'], 
 					}]
 				});	
 				if(!date) res.status(404).send("Can not Assign User To OJT Duty");
 				await assignUserToDuty(date.Users[0] , date.Duties[0]);
 			}				
 		}
-		res.status(301).send("OJT assign Completed");
+		res.status(201).send("OJT assign Completed");
 	}catch(error){
 		console.log(error);
 		next(error);

@@ -16,6 +16,7 @@ router.post('/', async(req, res, next)=>{
 			const score = parseInt(req.body.offCount) + parseInt(req.body.NoOffCount)*1.5 + parseInt(req.body.saryeong) * 0.5;
 			await User.create({id : req.body.id , name : req.body.name , score :score, month : req.body.month, order : (score-11.5) / (req.body.month-3) , offCount : req.body.offCount , NoOffCount : req.body.NoOffCount , saryeong : req.body.saryeong });
 			console.log(`Create User id : ${req.body.id} , name : ${req.body.name} Success`);
+			res.status(201).send(`Create User id : ${req.body.id} , name : ${req.body.name} Success`);
 		}
 	}catch(error){
 		console.log(error);
@@ -40,6 +41,7 @@ router.patch('/score', async(req, res, next)=>{
 
 		await user.increment({score :parseFloat(req.body.value)});
 		await user.update({order : ((user.dataValues.score + parseFloat(req.body.value)-11.5)/(user.dataValues.month-3))});
+		res.status(201).send("score editing success");
 
 		
 	}catch(error){

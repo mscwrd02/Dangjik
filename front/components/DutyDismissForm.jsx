@@ -7,14 +7,14 @@ import {css} from '@emotion/react';
 import DangjikForm from './formComponent/DangjikForm';
 
 const DutyDismissForm = ()=>{
-	const { register : register, handleSubmit : handleSubmit , formState: { errors : errors } } = useForm();
+	const { register : register, handleSubmit : handleSubmit , formState: { errors : errors } , reset :reset } = useForm();
 
 	const dismissDutyForced = async(data)=>{
 		console.log(data);
 		try{
 			const response = await axios.delete("https://dangjik.run.goorm.io/duty/dismiss/forced" , {data});
 			console.log(response);
-			console.log("duty has been dismissed");
+			reset();
 		}catch(error){
 			alert(error.response.data);
 		}

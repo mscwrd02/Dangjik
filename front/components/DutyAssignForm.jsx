@@ -8,14 +8,14 @@ import DangjikForm from './formComponent/DangjikForm';
 
 
 const DutyAssignForm = ()=>{
-	const { register : register, handleSubmit : handleSubmit , formState: { errors : errors } } = useForm();
+	const { register : register, handleSubmit : handleSubmit , formState: { errors : errors },reset : reset } = useForm();
 
 	const assignDutyForced = async(data)=>{
 		console.log(data);
 		try{
 			const response = await axios.post("https://dangjik.run.goorm.io/duty/assign/forced" , data);
 			console.log(response);
-			console.log("duty has been assigned");
+			reset();
 		}catch(error){
 			alert(error.response.data);
 		}

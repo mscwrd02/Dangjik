@@ -7,14 +7,14 @@ import DangjikForm from './formComponent/DangjikForm';
 
 
 const UserScoreForm = ()=>{
-	const { register : register, handleSubmit : handleSubmit , formState: { errors : errors } } = useForm();
+	const { register : register, handleSubmit : handleSubmit , formState: { errors : errors } , reset : reset} = useForm();
 
 	const scoreEdit = async(data)=>{
 		console.log(data);
 		try{
 			const response = await axios.patch("https://dangjik.run.goorm.io/user/score", data);
+			reset();
 			console.log(response);
-			console.log("score has been edited");
 		}catch(error){
 			alert(error.response.data);
 		}

@@ -9,14 +9,14 @@ import DangjikForm from './formComponent/DangjikForm';
 
 
 const DutyCreateForm = ()=>{
-	const { register : register, handleSubmit : handleSubmit , formState: { errors : errors } } = useForm();
+	const { register : register, handleSubmit : handleSubmit , formState: { errors : errors } , reset = reset} = useForm();
 
 	const createDuty = async (data) => {
     console.log(data);
     try {
       const response = await axios.post("https://dangjik.run.goorm.io/duty", data);
       console.log(response);
-			console.log('duty created');
+			reset();
     } catch (error) {
       alert(error.response.data);
     }
